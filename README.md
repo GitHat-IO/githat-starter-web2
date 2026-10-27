@@ -32,6 +32,23 @@ curl -i http://localhost:3000/api/x402/hello  # 402 + what to pay
 npm run check                                 # types + tests
 ```
 
+## Test a real payment
+
+**On your machine (anvil, no faucet, no keys of yours).** Needs [Foundry](https://getfoundry.sh). Three terminals:
+
+```bash
+npm run chain                                                  # 1: a local copy of Base Sepolia
+X402_LOCAL_RPC=http://127.0.0.1:8545 npm run dev               # 2: the app, settling on that copy
+npm run pay -- --local                                         # 3: pays 0.01 USDC, prints the transaction
+```
+
+The pay script gives anvil's second dev account 10 test USDC and pays the route like an agent would; the app checks and
+settles the payment itself with anvil's first dev account paying the gas. `cast receipt <transaction>` shows the USDC
+transfer to `X402_PAY_TO`. The app accepts `X402_LOCAL_RPC` only at a localhost address.
+
+**On Base Sepolia.** Leave `X402_LOCAL_RPC` unset (x402.org checks and settles). Take test USDC for a **throwaway** wallet
+from [faucet.circle.com](https://faucet.circle.com), then `PAYER_KEY=0x… npm run pay`. Never use a real wallet's key here.
+
 ## Add your own
 
 - A paid API route: copy `app/api/x402/hello/route.ts` and change the path and price.
